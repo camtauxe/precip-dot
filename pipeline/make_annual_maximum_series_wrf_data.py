@@ -22,7 +22,7 @@ def run(duration):
     timeslices = [('1979','2015')]
     # For rcp85 data (2006-2100), we split up results by decade
     if ('rcp85' in data_group):
-        timeslices = [(str(x),str(x+9)) for x in range(2020,2100,10)]
+        timeslices = [(str(x),str(x+29)) for x in range(2020,2060,30)]
 
     for ts in timeslices:
         ds_slice = ds_ams.sel(time=slice(ts[0],ts[1]))
