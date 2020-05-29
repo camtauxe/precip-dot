@@ -180,13 +180,13 @@ for my $group (grep $use_group{$_}, @allowed_data_groups) {
         print "Step: \033[1mDurations\033[0m...\n";
         unless ($dry_run) {
             check_input_dir("pcpt");
-            create_output_dir("durations");
+            create_output_dir("durations_rolling");
         }
 
         my @command = (
             "$python_exec", "$script_dir/make_durations_series_wrf_data.py",
             '-p', "$data_dir/pcpt/",
-            '-o', "$data_dir/durations/",
+            '-o', "$data_dir/durations_rolling/",
             '-d', "$group"
         );
         unshift(@command, 'srun') if ($in_slurm);
@@ -200,14 +200,14 @@ for my $group (grep $use_group{$_}, @allowed_data_groups) {
     if ($do_steps{'ams'}) {
         print "Step: \033[1mAMS\033[0m...\n";
         unless ($dry_run) {
-            check_input_dir("durations");
-            create_output_dir("annual_maximum_series");
+            check_input_dir("durations_rolling");
+            create_output_dir("annual_maximum_series_rolling");
         }
 
         my @command = (
             "$python_exec", "$script_dir/make_annual_maximum_series_wrf_data.py",
             '-p', "$data_dir/durations/", 
-            '-o', "$data_dir/annual_maximum_series/",
+            '-o', "$data_dir/annual_maximum_series_rolling/",
             '-d', "$group"
         );
         unshift(@command, 'srun') if ($in_slurm);

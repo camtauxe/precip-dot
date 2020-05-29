@@ -9,6 +9,19 @@ DURATIONS_PANDAS = ['2H','3H','6H','12H','1D','2D','3D','4D','7D','10D','20D','3
 OUT_NAMING_LU = dict(zip(DURATIONS_PANDAS, DURATIONS_NOAA))
 # '60m','1H', <- removed from durations since they are handled differently
 
+def duration_to_hours(duration_str):
+    '''
+    Convert one of the duration values (in the DURATIONS_PANDAS array),
+    and return the corresponding amount of hours in that duration.
+    '''
+    last_char = duration_str[-1:]
+    num = int(duration_str[:-1])
+    if last_char == 'D':
+        return num * 24
+    else:
+        return num
+
+
 def run_duration( files, duration, out_fn, variable='pcpt' ):
     '''
     run the duration resampling and dump to disk
@@ -24,7 +37,8 @@ def run_duration( files, duration, out_fn, variable='pcpt' ):
 
     '''
     ds = xr.open_mfdataset(files, combine='by_coords').load()
-    ds_dur = ds.resample(time=duration).sum()
+    window = duration_to_hours(duration)
+    ds_dur = ds.rolling(time=window).sum()
     # out_fn = os.path.join(out_path, '{0}_{1}_sum_wrf_{2}.nc'.format(variable,OUT_NAMING_LU[duration], group))
 
     # compression encoding
@@ -48,7 +62,8 @@ def run_short_duration( fn, duration, out_fn, variable='pcpt' ):
     
     # load the file / resample to duration
     ds = xr.open_dataset(fn).load()
-    ds_dur = ds.resample(time=duration).sum()
+    window = duration_to_hours(duration)
+    ds_dur = ds.rolling(time=window).sum()
     
     # compression encoding
     encoding = ds_dur[ variable ].encoding
